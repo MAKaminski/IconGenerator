@@ -22,14 +22,58 @@ def prompt_user_for_theme():
     print(f"User entered theme: {theme}\n{'-'*50}")
     return theme
 
-def fetch_images_from_unsplash(theme, config):
+def prompt_user_for_inputs():
+    """
+    Prompts the user to enter a theme, resolution, and batch size, and returns these inputs.
+    """
+    theme = input("Please enter a theme: ")
+    print(f"User entered theme: {theme}")
+
+    print("Please select a resolution:")
+    print("1. 64x64")
+    print("2. 1000x420")
+    print("3. Custom")
+    resolution_choice = input("Enter your choice (1, 2, or 3): ")
+    if resolution_choice == '1':
+        resolution = (64, 64)
+    elif resolution_choice == '2':
+        resolution = (1000, 420)
+    elif resolution_choice == '3':
+        width = int(input("Enter custom width: "))
+        height = int(input("Enter custom height: "))
+        resolution = (width, height)
+    else:
+        print("Invalid choice. Defaulting to 64x64.")
+        resolution = (64, 64)
+    print(f"User selected resolution: {resolution}")
+
+    print("Please select a batch size:")
+    print("1. 1 image")
+    print("2. 10 images")
+    print("3. Custom")
+    batch_size_choice = input("Enter your choice (1, 2, or 3): ")
+    if batch_size_choice == '1':
+        batch_size = 1
+    elif batch_size_choice == '2':
+        batch_size = 10
+    elif batch_size_choice == '3':
+        batch_size = int(input("Enter custom batch size: "))
+    else:
+        print("Invalid choice. Defaulting to 1 image.")
+        batch_size = 1
+    print(f"User selected batch size: {batch_size}")
+
+    print('-'*50)
+    return theme, resolution, batch_size
+
+def fetch_images_from_unsplash(theme, resolution, batch_size, config):
     """
     Fetches images from Unsplash based on the provided theme and configuration.
     If 'match_aspect_ratio' in the configuration is True, only fetches images that have an equal aspect ratio.
     Resizes the fetched images to 64x64 pixels and returns them as a list of PIL Image objects.
     """
     print(f"Fetching images for theme: {theme}")
-    response = requests.get(f'https://api.unsplash.com/search/photos?query={theme}&client_id={UNSPLASH_ACCESS_KEY}')
+    response = requests.get(f'https://api.unsplash.com/search/photos?query={theme}&client_id={UNSPLASH_ACCESS_KEY}&per_page={batch_size}')
 
     if response.status_code == 200:
         data = response.json()
@@ -98,8 +142,8 @@ def main():
     config = {
         'match_aspect_ratio': False
     }
-    theme = prompt_user_for_theme()
-    icons = fetch_images_from_unsplash(theme, config)
+    theme, resolution, batch_size = prompt_user_for_inputs()
+    icons = fetch_images_from_unsplash(theme, resolution, batch_size, config)
     
     # Save the original icons
     save_icons_to_directory(icons, theme, prefix="Base")
