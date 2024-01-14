@@ -37,7 +37,9 @@ def fetch_images_from_unsplash(theme, config):
         for i, result in enumerate(data['results']):
             img_url = result['urls']['small']
             img_response = requests.get(img_url)
+            print(f'Response content: {img_response.content}')
             img = Image.open(BytesIO(img_response.content))
+            print(f'Image: {img}')
             
             # Check if the image has an equal aspect ratio
             if not config['match_aspect_ratio'] or img.width == img.height:

@@ -1,4 +1,4 @@
-# V1 
+# V1 - COMPLETE
 
 1) Prompt user for theme
 2) Generate 10 Piece Icon Set - Save to app/src/icons
